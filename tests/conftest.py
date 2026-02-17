@@ -1,9 +1,17 @@
 import pytest
-from unittest.mock import Mock, AsyncMock
+from unittest.mock import Mock, AsyncMock, MagicMock
 from fastapi.testclient import TestClient
 
 from src.main import app
-from src.dependencies import get_model_manager
+from src.dependencies import get_model_manager, get_ad_repository
+
+@pytest.fixture(autouse=True)
+def mock_db_pool(monkeypatch):
+    async def fake_create_pool(*args, **kwargs):
+        pool = MagicMock()
+        pool.close = AsyncMock()
+        return pool
+    monkeypatch.setattr("asyncpg.create_pool", fake_create_pool)
 
 @pytest.fixture
 def client():
@@ -35,13 +43,23 @@ def mock_model_manager():
     return mock_manager
 
 @pytest.fixture
-def app_with_dependency_overrides(mock_model_manager):
+def mock_ad_repository():
+    mock = Mock()
+    mock.get_with_user_by_id = AsyncMock()
+    return mock
+
+@pytest.fixture
+def app_with_dependency_overrides(mock_model_manager, mock_ad_repository):
     original_overrides = app.dependency_overrides.copy()
-    
+
+    async def get_mock_ad_repo():
+        return mock_ad_repository
+
     app.dependency_overrides[get_model_manager] = lambda: mock_model_manager
-    
+    app.dependency_overrides[get_ad_repository] = get_mock_ad_repo
+
     yield app
-    
+
     app.dependency_overrides = original_overrides
 
 @pytest.fixture

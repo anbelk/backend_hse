@@ -1,9 +1,13 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 import logging
+import os
+
+import asyncpg
 
 from src.model import ModelManager
 from src.routes import prediction, health
+from src.repositories import UserRepository, AdRepository
 
 logging.basicConfig(
     level=logging.INFO,
@@ -13,20 +17,29 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    pool = None
     try:
         logger.info("Initializing model manager...")
         model_manager = ModelManager()
         await model_manager.initialize()
-        
         app.state.model_manager = model_manager
-        
-        logger.info("Model manager initialized successfully")
+
+        dsn = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/ad_moderation")
+        if "?" in dsn:
+            dsn = dsn.split("?")[0]
+        pool = await asyncpg.create_pool(dsn, min_size=2, max_size=10)
+        app.state.user_repository = UserRepository(pool)
+        app.state.ad_repository = AdRepository(pool)
+
+        logger.info("Model manager and database initialized successfully")
     except Exception as e:
-        logger.critical(f"Critical failure: Model could not be initialized: {str(e)}")
+        logger.critical(f"Critical failure: {str(e)}")
         raise
-    
+
     yield
-    
+
+    if pool:
+        await pool.close()
     logger.info("Shutting down application")
 
 app = FastAPI(
