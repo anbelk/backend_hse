@@ -23,7 +23,7 @@ class ModelManager:
             raise FileNotFoundError(f"Model file not found: {path}. Run scripts/train_model.py first.")
         with open(path, "rb") as f:
             self.model = pickle.load(f)
-        logger.info(f"Model loaded from {path}")
+        logger.info("Model loaded from %s", path)
 
     @staticmethod
     def prepare_features(
@@ -51,7 +51,7 @@ class ModelManager:
         features = self.prepare_features(
             is_verified_seller, images_qty, description_length, category
         )
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         violation_proba = await loop.run_in_executor(
             None,
             lambda: self.model.predict_proba(features)[0, 1],
@@ -65,7 +65,7 @@ class ModelManager:
     async def initialize(self) -> None:
         try:
             self.load()
-            logger.info("Model initialized successfully")
+            logger.info("Model initialized")
         except Exception as e:
-            logger.critical(f"Critical failure: Model could not be initialized: {e}")
+            logger.critical("Model init failed: %s", e)
             raise

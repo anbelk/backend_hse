@@ -16,3 +16,21 @@ class AdModerationResponseSchema(BaseModel):
 
 class SimplePredictRequestSchema(BaseModel):
     item_id: int = Field(..., gt=0)
+
+
+class AsyncPredictRequestSchema(BaseModel):
+    item_id: int = Field(..., gt=0)
+
+
+class AsyncPredictResponseSchema(BaseModel):
+    task_id: int
+    status: str = "pending"
+    message: str = "Moderation request accepted"
+
+
+class ModerationResultResponseSchema(BaseModel):
+    task_id: int
+    status: str
+    is_violation: bool | None = None
+    probability: float | None = None
+    error_message: str | None = None

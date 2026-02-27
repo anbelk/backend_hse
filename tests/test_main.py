@@ -1,9 +1,3 @@
-import pytest
-from unittest.mock import Mock
-
-from src.main import app
-from src.dependencies import get_model_manager
-
 class TestInputValidation:
     def test_predict_validation_wrong_type(self, client_with_model, valid_ad_payload):
         payload = valid_ad_payload.copy()
