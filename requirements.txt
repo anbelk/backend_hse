@@ -11,3 +11,5 @@ asyncpg>=0.29
 psycopg2-binary>=2.9
 yandex-pgmigrate
 aiokafka>=0.10
+prometheus-client>=0.19
+sentry-sdk[fastapi]>=2.0

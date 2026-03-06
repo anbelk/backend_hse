@@ -3,8 +3,8 @@ from unittest.mock import AsyncMock, MagicMock, Mock
 
 from fastapi.testclient import TestClient
 
-from src.main import app
-from src.dependencies import (
+from app.main import app
+from app.dependencies import (
     get_ad_repository,
     get_kafka_producer,
     get_model_manager,
@@ -30,7 +30,7 @@ def mock_kafka_producer(monkeypatch):
 
     def fake_create_producer(*args, **kwargs):
         return mock_producer
-    monkeypatch.setattr("src.main.create_kafka_producer", fake_create_producer)
+    monkeypatch.setattr("app.main.create_kafka_producer", fake_create_producer)
 
 @pytest.fixture
 def client():

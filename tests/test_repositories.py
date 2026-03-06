@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 
-from src.repositories import UserRepository, AdRepository
+from app.repositories import UserRepository, AdRepository
 
 
 @pytest.fixture

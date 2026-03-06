@@ -86,12 +86,13 @@ class TestModelPrediction:
         assert "not available" in response.json()["detail"]
 
     def test_predict_ml_model_prediction_error(self, client_with_model, valid_ad_payload, mock_model_manager):
-        mock_model_manager.predict.side_effect = ValueError("Model prediction error")
+        from app.exceptions import ErrorInPrediction
+        mock_model_manager.predict.side_effect = ErrorInPrediction("inference failed")
 
         response = client_with_model.post("/predict", json=valid_ad_payload)
 
-        assert response.status_code == 400
-        assert "Model prediction error" in response.json()["detail"]
+        assert response.status_code == 500
+        assert "Error making prediction" in response.json()["detail"]
 
 
 class TestSimplePredict:

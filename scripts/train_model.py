@@ -8,7 +8,7 @@ sys.path.insert(0, str(ROOT))
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 
-from src.model import DEFAULT_MODEL_PATH
+from app.model import DEFAULT_MODEL_PATH
 
 MODEL_PATH = ROOT / DEFAULT_MODEL_PATH
 

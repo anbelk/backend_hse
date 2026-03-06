@@ -1,4 +1,28 @@
+# Python
 .venv/
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# Tests
 .pytest_cache/
+.coverage
+htmlcov/
+
+# Env
+.env
+
+# Models
 models/
+*.pkl
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
